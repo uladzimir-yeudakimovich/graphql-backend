@@ -1,0 +1,26 @@
+{
+  "name": "graphql-task",
+  "version": "1.0.0",
+  "description": "GraphQL",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uladzimir-yeudakimovich/GraphQL.git"
+  },
+  "keywords": [
+    "graphql"
+  ],
+  "author": "Uladzimir Yeudakimovich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uladzimir-yeudakimovich/GraphQL/issues"
+  },
+  "homepage": "https://github.com/uladzimir-yeudakimovich/GraphQL#readme",
+  "dependencies": {
+    "apollo-server": "^2.15.0",
+    "graphql": "^15.1.0"
+  }
+}
