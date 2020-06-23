@@ -1,6 +1,6 @@
 const { UserInputError, gql } = require('apollo-server');
-const uuid = require('uuid/v1')
-let persons = require('./data/persons');
+const uuid = require('uuid/v1');
+let persons = require('../data/persons');
 
 const typeDefs = gql`
   type Person {
