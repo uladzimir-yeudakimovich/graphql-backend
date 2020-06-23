@@ -1,13 +1,18 @@
-const { gql } = require('apollo-server');
+const { UserInputError, gql } = require('apollo-server');
+const uuid = require('uuid/v1')
 let persons = require('./persons');
 
 const typeDefs = gql`
   type Person {
     name: String!
     phone: String
+    address: Address!
+    id: ID!
+  }
+
+  type Address {
     street: String!
     city: String! 
-    id: ID!
   }
 
   type Query {
@@ -15,6 +20,15 @@ const typeDefs = gql`
     allPersons: [Person!]!
     findPerson(name: String!): Person
   }
+
+  type Mutation {
+    addPerson(
+      name: String!
+      phone: String
+      street: String!
+      city: String!
+    ): Person
+  }  
 `;
 
 const resolvers = {
@@ -27,9 +41,26 @@ const resolvers = {
   Person: {
     name: (root) => root.name,
     phone: (root) => root.phone,
-    street: (root) => root.street,
-    city: (root) => root.city,
+    address: (root) => {
+      return { 
+        street: root.street,
+        city: root.city
+      }
+    },
     id: (root) => root.id
+  },
+  Mutation: {
+    addPerson: (root, args) => {
+      if (persons.find(p => p.name === args.name)) {
+        throw new UserInputError('Name must be unique', {
+          invalidArgs: args.name,
+        })
+      }
+
+      const person = { ...args, id: uuid() }
+      persons = persons.concat(person)
+      return person
+    }
   }
 };
 
