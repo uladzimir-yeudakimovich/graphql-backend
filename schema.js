@@ -1,8 +1,25 @@
 const { UserInputError, gql } = require('apollo-server');
 const uuid = require('uuid/v1');
-let persons = require('../data/persons');
+
+let authors = require('./data/authors');
+let books = require('./data/books');
+let persons = require('./data/persons');
 
 const typeDefs = gql`
+  type Author {
+    name: String!
+    born: Int!
+    id: ID!
+  }
+
+  type Book {
+    title: String!
+    published: Int!
+    author: String!
+    id: ID!
+    genres: [String!]!
+  }
+
   type Person {
     name: String!
     phone: String
@@ -21,6 +38,12 @@ const typeDefs = gql`
   }
 
   type Query {
+    authorCount: Int!
+    allAuthors: [Author!]!
+    findAuthor(name: String!): Author
+    bookCount: Int!
+    allBooks: [Book!]!
+    findBook(title: String!): Book
     personCount: Int!
     allPersons(phone: YesNo): [Person!]!
     findPerson(name: String!): Person
@@ -42,6 +65,14 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
+    authorCount: () => authors.length,
+    allAuthors: () => authors,
+    findAuthor: (root, args) =>
+      authors.find(p => p.name === args.name),
+    bookCount: () => books.length,
+    allBooks: () => books,
+    findBook: (root, args) =>
+      books.find(p => p.title === args.title),
     personCount: () => persons.length,
     allPersons: (root, args) => {
       if (!args.phone) {
