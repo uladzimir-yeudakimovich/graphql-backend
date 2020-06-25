@@ -81,6 +81,9 @@ const resolvers = {
     allBooks: (root, args) => {
       if (!args.author && !args.genre) {
         return books
+      } else if (args.author && args.genre) {
+        const authorBooks = books.filter(el => el.author === args.author)
+        return authorBooks.filter(el => el.genres.indexOf(args.genre) > -1)
       } else if (args.author) {
         return books.filter(el => el.author === args.author)
       } else if (args.genre) {
