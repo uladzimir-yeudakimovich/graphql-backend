@@ -43,7 +43,7 @@ const typeDefs = gql`
     allAuthors: [Author!]!
     findAuthor(name: String!): Author
     bookCount: Int!
-    allBooks(author: String!): [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
     findBook(title: String!): Book
     personCount: Int!
     allPersons(phone: YesNo): [Person!]!
@@ -79,10 +79,13 @@ const resolvers = {
       authors.find(p => p.name === args.name),
     bookCount: () => books.length,
     allBooks: (root, args) => {
-      if (!args.author) {
+      if (!args.author && !args.genre) {
         return books
+      } else if (args.author) {
+        return books.filter(el => el.author === args.author)
+      } else if (args.genre) {
+        return books.filter(el => el.genres.indexOf(args.genre) > -1)
       }
-      return books.filter(el => el.author === args.author)
     },
     findBook: (root, args) =>
       books.find(p => p.title === args.title),
