@@ -69,6 +69,11 @@ const typeDefs = gql`
       name: String!
       phone: String!
     ): Person
+
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }  
 `;
 
@@ -133,6 +138,13 @@ const resolvers = {
       return person
     },
     addBook: (root, args) => {
+      if (!authors.find(a => a.name === args.author)) {
+        authors.push({
+          name: args.author,
+          id: uuid()
+        })
+      }
+
       const book = { ...args, id: uuid() }
       books = books.concat(book)
       return book
@@ -146,6 +158,16 @@ const resolvers = {
       const updatedPerson = { ...person, phone: args.phone }
       persons = persons.map(p => p.name === args.name ? updatedPerson : p)
       return updatedPerson
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find(p => p.name === args.name)
+      if (!author) {
+        return null
+      }
+  
+      const updatedAuthor = { ...author, born: args.setBornTo }
+      authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
+      return updatedAuthor
     }
   }
 };
