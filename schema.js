@@ -8,14 +8,14 @@ let persons = require('./data/persons');
 const typeDefs = gql`
   type Author {
     name: String!
-    born: Int!
+    born: Int
     bookCount: Int!
     id: ID!
   }
 
   type Book {
     title: String!
-    published: Int!
+    published: Int
     author: String!
     id: ID!
     genres: [String!]!
@@ -57,6 +57,14 @@ const typeDefs = gql`
       street: String!
       city: String!
     ): Person
+
+    addBook(
+      title: String!
+      author: String!
+      published: Int
+      genres: [String!]!
+    ): Book
+
     editNumber(
       name: String!
       phone: String!
@@ -105,15 +113,12 @@ const resolvers = {
       persons.find(p => p.name === args.name)
   },
   Person: {
-    name: (root) => root.name,
-    phone: (root) => root.phone,
     address: (root) => {
       return { 
         street: root.street,
         city: root.city
       }
-    },
-    id: (root) => root.id
+    }
   },
   Mutation: {
     addPerson: (root, args) => {
@@ -126,6 +131,11 @@ const resolvers = {
       const person = { ...args, id: uuid() }
       persons = persons.concat(person)
       return person
+    },
+    addBook: (root, args) => {
+      const book = { ...args, id: uuid() }
+      books = books.concat(book)
+      return book
     },
     editNumber: (root, args) => {
       const person = persons.find(p => p.name === args.name)
