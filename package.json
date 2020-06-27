@@ -1,7 +1,7 @@
 {
-  "name": "graphql-task",
+  "name": "graphql-backend",
   "version": "1.0.0",
-  "description": "GraphQL",
+  "description": "backend",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/uladzimir-yeudakimovich/GraphQL.git"
+    "url": "git+https://github.com/uladzimir-yeudakimovich/graphql-backend.git"
   },
   "keywords": [
     "graphql"
@@ -17,9 +17,9 @@
   "author": "Uladzimir Yeudakimovich",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/uladzimir-yeudakimovich/GraphQL/issues"
+    "url": "https://github.com/uladzimir-yeudakimovich/graphql-backend/issues"
   },
-  "homepage": "https://github.com/uladzimir-yeudakimovich/GraphQL#readme",
+  "homepage": "https://github.com/uladzimir-yeudakimovich/graphql-backend#readme",
   "dependencies": {
     "apollo-server": "^2.15.0",
     "graphql": "^15.1.0",
