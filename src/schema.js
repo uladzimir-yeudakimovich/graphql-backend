@@ -5,6 +5,8 @@ let authors = require('./data/authors');
 let books = require('./data/books');
 let persons = require('./data/persons');
 
+const Person = require('./models/person');
+
 const typeDefs = gql`
   type Author {
     name: String!
@@ -103,19 +105,11 @@ const resolvers = {
         return books.filter(el => el.genres.indexOf(args.genre) > -1)
       }
     },
-    findBook: (root, args) =>
-      books.find(p => p.title === args.title),
-    personCount: () => persons.length,
-    allPersons: (root, args) => {
-      if (!args.phone) {
-        return persons
-      }
-      const byPhone = (person) =>
-        args.phone === 'YES' ? person.phone : !person.phone
-      return persons.filter(byPhone)
-    },
-    findPerson: (root, args) =>
-      persons.find(p => p.name === args.name)
+    findBook: (root, args) => books.find(p => p.title === args.title),
+
+    personCount: () => Person.collection.countDocuments(),
+    allPersons: (root, args) =>  Person.find({}),
+    findPerson: (root, args) => Person.findOne({ name: args.name })
   },
   Person: {
     address: (root) => {
@@ -127,15 +121,8 @@ const resolvers = {
   },
   Mutation: {
     addPerson: (root, args) => {
-      if (persons.find(p => p.name === args.name)) {
-        throw new UserInputError('Name must be unique', {
-          invalidArgs: args.name,
-        })
-      }
-
-      const person = { ...args, id: uuid() }
-      persons = persons.concat(person)
-      return person
+      const person = new Person({ ...args })
+      return person.save()
     },
     addBook: (root, args) => {
       if (!authors.find(a => a.name === args.author)) {
@@ -149,15 +136,10 @@ const resolvers = {
       books = books.concat(book)
       return book
     },
-    editNumber: (root, args) => {
-      const person = persons.find(p => p.name === args.name)
-      if (!person) {
-        return null
-      }
-  
-      const updatedPerson = { ...person, phone: args.phone }
-      persons = persons.map(p => p.name === args.name ? updatedPerson : p)
-      return updatedPerson
+    editNumber: async (root, args) => {
+      const person = await Person.findOne({ name: args.name })
+      person.phone = args.phone
+      return person.save()
     },
     editAuthor: (root, args) => {
       const author = authors.find(p => p.name === args.name)
