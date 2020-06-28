@@ -108,7 +108,13 @@ const resolvers = {
     findBook: (root, args) => books.find(p => p.title === args.title),
 
     personCount: () => Person.collection.countDocuments(),
-    allPersons: (root, args) =>  Person.find({}),
+    allPersons: (root, args) => {
+      if (!args.phone) {
+        return Person.find({})
+      }
+  
+      return Person.find({ phone: { $exists: args.phone === 'YES'  }})
+    },
     findPerson: (root, args) => Person.findOne({ name: args.name })
   },
   Person: {
@@ -120,9 +126,18 @@ const resolvers = {
     }
   },
   Mutation: {
-    addPerson: (root, args) => {
+    addPerson: async (root, args) => {
       const person = new Person({ ...args })
-      return person.save()
+
+      try {
+        await person.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+
+      return person
     },
     addBook: (root, args) => {
       if (!authors.find(a => a.name === args.author)) {
@@ -139,7 +154,16 @@ const resolvers = {
     editNumber: async (root, args) => {
       const person = await Person.findOne({ name: args.name })
       person.phone = args.phone
-      return person.save()
+
+      try {
+        await person.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+
+      return person
     },
     editAuthor: (root, args) => {
       const author = authors.find(p => p.name === args.name)
