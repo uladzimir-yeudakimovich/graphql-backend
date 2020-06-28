@@ -2,9 +2,9 @@
   "name": "graphql-backend",
   "version": "1.0.0",
   "description": "backend",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "dev": "nodemon src/index.js",
     "test": "test"
   },
   "repository": {
@@ -23,6 +23,8 @@
   "dependencies": {
     "apollo-server": "^2.15.0",
     "graphql": "^15.1.0",
+    "mongoose": "^5.9.20",
+    "mongoose-unique-validator": "^2.0.3",
     "uuid": "3.3.3"
   },
   "devDependencies": {
