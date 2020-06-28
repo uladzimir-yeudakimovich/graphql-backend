@@ -1,11 +1,13 @@
 const { UserInputError, gql } = require('apollo-server');
 const uuid = require('uuid/v1');
+const jwt = require('jsonwebtoken');
+
+const { JWT_SECRET_KEY } = require('./common/config');
+const Person = require('./models/person');
+const User = require('./models/user');
 
 let authors = require('./data/authors');
 let books = require('./data/books');
-let persons = require('./data/persons');
-
-const Person = require('./models/person');
 
 const typeDefs = gql`
   type Author {
@@ -40,6 +42,16 @@ const typeDefs = gql`
     NO
   }
 
+  type User {
+    username: String!
+    friends: [Person!]!
+    id: ID!
+  }
+  
+  type Token {
+    value: String!
+  }
+
   type Query {
     authorCount: Int!
     allAuthors: [Author!]!
@@ -50,6 +62,7 @@ const typeDefs = gql`
     personCount: Int!
     allPersons(phone: YesNo): [Person!]!
     findPerson(name: String!): Person
+    me: User
   }
 
   type Mutation {
@@ -76,6 +89,15 @@ const typeDefs = gql`
       name: String!
       setBornTo: Int!
     ): Author
+
+    createUser(
+      username: String!
+    ): User
+
+    login(
+      username: String!
+      password: String!
+    ): Token
   }  
 `;
 
@@ -115,7 +137,10 @@ const resolvers = {
   
       return Person.find({ phone: { $exists: args.phone === 'YES'  }})
     },
-    findPerson: (root, args) => Person.findOne({ name: args.name })
+    findPerson: (root, args) => Person.findOne({ name: args.name }),
+    me: (root, args, context) => {
+      return context.currentUser
+    }
   },
   Person: {
     address: (root) => {
@@ -174,6 +199,30 @@ const resolvers = {
       const updatedAuthor = { ...author, born: args.setBornTo }
       authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
       return updatedAuthor
+    },
+    createUser: (root, args) => {
+      const user = new User({ username: args.username })
+  
+      return user.save()
+        .catch(error => {
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        })
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username })
+  
+      if ( !user || args.password !== 'secret' ) {
+        throw new UserInputError("wrong credentials")
+      }
+  
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      }
+  
+      return { value: jwt.sign(userForToken, JWT_SECRET_KEY) }
     }
   }
 };
