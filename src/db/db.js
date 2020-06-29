@@ -5,8 +5,11 @@ const { MONGO_CONNECTION_STRING } = require('../common/config');
 const connectToDb = callback => {
   mongoose.set('useFindAndModify', false);
 
-  mongoose.connect(MONGO_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
+  mongoose.connect(MONGO_CONNECTION_STRING, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+  }).then(() => {
       console.log('connected to MongoDB');
       callback();
     })
