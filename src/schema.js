@@ -3,6 +3,8 @@ const uuid = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET_KEY } = require('./common/config');
+const Author = require('./models/author');
+const Book = require('./models/book');
 const Person = require('./models/person');
 const User = require('./models/user');
 
