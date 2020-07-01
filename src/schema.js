@@ -8,9 +8,6 @@ const Book = require('./models/book');
 const Person = require('./models/person');
 const User = require('./models/user');
 
-let authors = require('./data/authors');
-let books = require('./data/books');
-
 const typeDefs = gql`
   type Author {
     name: String!
@@ -21,10 +18,10 @@ const typeDefs = gql`
 
   type Book {
     title: String!
-    published: Int
-    author: String!
-    id: ID!
+    published: Int!
+    author: Author!
     genres: [String!]!
+    id: ID!
   }
 
   type Person {
@@ -109,21 +106,22 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    authorCount: () => authors.length,
-    allAuthors: () => {
-      const authorsWithBookCount = [];
-      authors.forEach(author => {
-        author.bookCount = books.filter(book => book.author === author.name).length
-        authorsWithBookCount.push(author)
-      })
-      return authorsWithBookCount
+    authorCount: () => Author.collection.countDocuments(),
+    allAuthors: async () => {
+      return Author.find({});
+      // const authorsWithBookCount = [];
+      // authors.forEach(author => {
+      //   author.bookCount = books.filter(book => book.author === author.name).length
+      //   authorsWithBookCount.push(author)
+      // })
+      // return authorsWithBookCount
     },
-    findAuthor: (root, args) =>
-      authors.find(p => p.name === args.name),
-    bookCount: () => books.length,
+    findAuthor: (root, args) => Author.findOne({ name: args.name }),
+
+    bookCount: () => Book.collection.countDocuments(),
     allBooks: (root, args) => {
       if (!args.author && !args.genre) {
-        return books
+        return Book.find({})
       } else if (args.author && args.genre) {
         const authorBooks = books.filter(el => el.author === args.author)
         return authorBooks.filter(el => el.genres.indexOf(args.genre) > -1)
@@ -133,7 +131,7 @@ const resolvers = {
         return books.filter(el => el.genres.indexOf(args.genre) > -1)
       }
     },
-    findBook: (root, args) => books.find(p => p.title === args.title),
+    findBook: (root, args) => Book.findOne({ title: args.title }),
 
     personCount: () => Person.collection.countDocuments(),
     allPersons: (root, args) => {
