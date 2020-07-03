@@ -108,14 +108,11 @@ const resolvers = {
   Query: {
     authorCount: () => Author.collection.countDocuments(),
     allAuthors: async () => {
-      // console.log((await Author.find({})).map(el => el.name));
-      // console.log((await Book.find({})).map(el => el.author));
-      return Author.find({});
-      // authors.forEach(author => {
-      //   author.bookCount = books.filter(book => book.author === author.name).length
-      //   authorsWithBookCount.push(author)
-      // })
-      // return authorsWithBookCount
+      return (await Author.find({})).map(async el => {
+        const { name, born, id } = el;
+        const bookCount = (await Book.find({author: name})).length;
+        return { name, born, id, bookCount };
+      });
     },
     findAuthor: (root, args) => Author.findOne({ name: args.name }),
 
@@ -124,9 +121,8 @@ const resolvers = {
       if (!args.author && !args.genre) {
         return Book.find({})
       } else if (args.author && args.genre) {
-        return Book.find({ genres: { $in: [args.genre] } })
-        // const authorBooks = books.filter(el => el.author === args.author)
-        // return authorBooks.filter(el => el.genres.indexOf(args.genre) > -1)
+        const writer = Book.find({ author: args.author });
+        return writer.find({ genres: { $in: [args.genre] } });
       } else if (args.author) {
         return Book.find({ author: args.author })
       } else if (args.genre) {
