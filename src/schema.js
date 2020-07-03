@@ -173,17 +173,27 @@ const resolvers = {
   
       return person
     },
-    addBook: (root, args) => {
-      if (!authors.find(a => a.name === args.author)) {
-        authors.push({
-          name: args.author,
-          id: uuid()
-        })
+    addBook: async (root, args) => {
+      if (!(await Author.findOne({ name: args.author }))) {
+        const author = new Author({ name: args.author, id: uuid() });
+        try {
+          await author.save();
+        } catch (error) {
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
       }
 
-      const book = { ...args, id: uuid() }
-      books = books.concat(book)
-      return book
+      const book = new Book({ ...args, id: uuid() });
+      try {
+        await book.save();
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+      return book;
     },
     editNumber: async (root, args) => {
       const person = await Person.findOne({ name: args.name })
@@ -199,15 +209,21 @@ const resolvers = {
 
       return person
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(p => p.name === args.name)
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({ name: args.name })
       if (!author) {
         return null
       }
   
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
-      return updatedAuthor
+      author.born = args.setBornTo;
+      try {
+        await author.save();
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        });
+      }
+      return author;
     },
     createUser: (root, args) => {
       const user = new User({ username: args.username })
