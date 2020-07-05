@@ -19,7 +19,7 @@ const typeDefs = gql`
   type Book {
     title: String!
     published: Int!
-    author: Author!
+    author: String!
     genres: [String!]!
     id: ID!
   }
@@ -166,7 +166,7 @@ const resolvers = {
         currentUser.friends = currentUser.friends.concat(person)
         await currentUser.save()
       } catch (error) {
-        throw new UserInputError(error.message, {
+        throw new UserInputError(error._message, {
           invalidArgs: args,
         })
       }
@@ -179,7 +179,7 @@ const resolvers = {
         try {
           await author.save();
         } catch (error) {
-          throw new UserInputError(error.message, {
+          throw new UserInputError(error._message, {
             invalidArgs: args,
           })
         }
@@ -189,7 +189,7 @@ const resolvers = {
       try {
         await book.save();
       } catch (error) {
-        throw new UserInputError(error.message, {
+        throw new UserInputError(error._message, {
           invalidArgs: args,
         })
       }
@@ -202,7 +202,7 @@ const resolvers = {
       try {
         await person.save()
       } catch (error) {
-        throw new UserInputError(error.message, {
+        throw new UserInputError(error._message, {
           invalidArgs: args,
         })
       }
@@ -219,7 +219,7 @@ const resolvers = {
       try {
         await author.save();
       } catch (error) {
-        throw new UserInputError(error.message, {
+        throw new UserInputError(error._message, {
           invalidArgs: args,
         });
       }
@@ -230,7 +230,7 @@ const resolvers = {
   
       return user.save()
         .catch(error => {
-          throw new UserInputError(error.message, {
+          throw new UserInputError(error._message, {
             invalidArgs: args,
           })
         })
