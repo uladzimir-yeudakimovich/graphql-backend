@@ -43,7 +43,7 @@ const typeDefs = gql`
 
   type User {
     username: String!
-    friends: [Person!]!
+    favoriteGenre: String!
     id: ID!
   }
   
@@ -91,6 +91,7 @@ const typeDefs = gql`
 
     createUser(
       username: String!
+      favoriteGenre: String!
     ): User
 
     login(
@@ -173,7 +174,13 @@ const resolvers = {
   
       return person
     },
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      const currentUser = context.currentUser
+  
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
+
       if (!(await Author.findOne({ name: args.author }))) {
         const author = new Author({ name: args.author, id: uuid() });
         try {
@@ -195,7 +202,13 @@ const resolvers = {
       }
       return book;
     },
-    editNumber: async (root, args) => {
+    editNumber: async (root, args, context) => {
+      const currentUser = context.currentUser
+  
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
+
       const person = await Person.findOne({ name: args.name })
       person.phone = args.phone
 
@@ -209,7 +222,13 @@ const resolvers = {
 
       return person
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      const currentUser = context.currentUser
+  
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
+      
       const author = await Author.findOne({ name: args.name })
       if (!author) {
         return null
