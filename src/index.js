@@ -24,7 +24,8 @@ const server = new ApolloServer({
 });
 
 connectToDb(() => {
-  server.listen().then(({ url }) => {
+  server.listen().then(({ url, subscriptionsUrl }) => {
     console.log(`Server ready at ${url}`)
+    console.log(`Subscriptions ready at ${subscriptionsUrl}`)
   });
 });

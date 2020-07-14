@@ -1,4 +1,5 @@
-const { UserInputError, gql } = require('apollo-server');
+const { UserInputError, gql, PubSub } = require('apollo-server');
+const pubsub = new PubSub()
 const uuid = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
@@ -102,7 +103,11 @@ const typeDefs = gql`
     addAsFriend(
       name: String!
     ): User
-  }  
+  }
+
+  type Subscription {
+    personAdded: Person!
+  }    
 `;
 
 const resolvers = {
@@ -171,6 +176,8 @@ const resolvers = {
           invalidArgs: args,
         })
       }
+
+      pubsub.publish('PERSON_ADDED', { personAdded: person })
   
       return person
     },
@@ -285,6 +292,11 @@ const resolvers = {
   
       return currentUser
     }
+  },
+  Subscription: {
+    personAdded: {
+      subscribe: () => pubsub.asyncIterator(['PERSON_ADDED'])
+    },
   }
 };
 
