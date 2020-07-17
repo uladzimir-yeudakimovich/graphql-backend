@@ -9,6 +9,34 @@ const Book = require('./models/book');
 const Person = require('./models/person');
 const User = require('./models/user');
 
+// import { typeDef as Author, resolvers as authorResolvers } from './author.js'
+// import { typeDef as Book, resolvers as bookResolvers } from './book.js';
+// import { typeDef as Person } from './person.js';
+
+// const Query = `
+//   type Query {
+//     authorCount: Int!
+//     allAuthors: [Author!]!
+//     findAuthor(name: String!): Author
+//     bookCount: Int!
+//     allBooks(author: String, genre: String): [Book!]!
+//     findBook(title: String!): Book
+//     personCount: Int!
+//     allPersons(phone: YesNo): [Person!]!
+//     findPerson(name: String!): Person
+//     me: User
+//     _empty: String
+//   }
+
+//   extend type Query {
+//     author(id: Int!): Author
+//   }
+  
+//   extend type Query {
+//     book(id: Int!): Book
+//   }
+// `
+
 const typeDefs = gql`
   type Author {
     name: String!
@@ -309,5 +337,10 @@ const resolvers = {
     },
   }
 };
+
+// export const schema = makeExecutableSchema({
+//   typeDefs: [ Query, Author, Book, Person ],
+//   resolvers: merge(resolvers, authorResolvers, bookResolvers)
+// });
 
 module.exports = { typeDefs, resolvers };
