@@ -1,4 +1,4 @@
-export const typeDef = `
+exports.typeDefBook = `
   extend type Query {
     book(id: Int!): Book
   }
@@ -12,7 +12,7 @@ export const typeDef = `
   }
 `;
 
-export const resolvers = {
+exports.bookResolvers = {
   Book: {
     author: () => {
       
