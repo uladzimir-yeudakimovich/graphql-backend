@@ -1,23 +1,12 @@
 const { UserInputError, gql, PubSub } = require('apollo-server');
-const pubsub = new PubSub()
-const uuid = require('uuid/v1');
+const pubsub = new PubSub();
 const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET_KEY } = require('./common/config');
-const Author = require('./models/author');
-const Book = require('./models/book');
 const Person = require('./models/person');
 const User = require('./models/user');
 
 exports.typeDefPerson = `
-  type Book {
-    title: String!
-    published: Int!
-    author: String!
-    genres: [String!]!
-    id: ID!
-  }
-
   type Person {
     name: String!
     phone: String
@@ -49,21 +38,6 @@ exports.typeDefPerson = `
 
 exports.personResolvers = {
   Query: {
-    bookCount: () => Book.collection.countDocuments(),
-    allBooks: (root, args) => {
-      if (!args.author && !args.genre) {
-        return Book.find({})
-      } else if (args.author && args.genre) {
-        const writer = Book.find({ author: args.author });
-        return writer.find({ genres: { $in: [args.genre] } });
-      } else if (args.author) {
-        return Book.find({ author: args.author })
-      } else if (args.genre) {
-        return Book.find({ genres: { $in: [args.genre] } })
-      }
-    },
-    findBook: (root, args) => Book.findOne({ title: args.title }),
-
     personCount: () => Person.collection.countDocuments(),
     allPersons: (root, args) => {
       if (!args.phone) {
@@ -116,34 +90,6 @@ exports.personResolvers = {
       pubsub.publish('PERSON_ADDED', { personAdded: person })
   
       return person
-    },
-    addBook: async (root, args, context) => {
-      const currentUser = context.currentUser
-  
-      if (!currentUser) {
-        throw new AuthenticationError("not authenticated")
-      }
-
-      if (!(await Author.findOne({ name: args.author }))) {
-        const author = new Author({ name: args.author, id: uuid() });
-        try {
-          await author.save();
-        } catch (error) {
-          throw new UserInputError(error._message, {
-            invalidArgs: args,
-          })
-        }
-      }
-
-      const book = new Book({ ...args, id: uuid() });
-      try {
-        await book.save();
-      } catch (error) {
-        throw new UserInputError(error._message, {
-          invalidArgs: args,
-        })
-      }
-      return book;
     },
     editNumber: async (root, args, context) => {
       const currentUser = context.currentUser
