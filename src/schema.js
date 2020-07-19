@@ -69,6 +69,6 @@ const Subscription = `
 `;
 
 exports.schema = makeExecutableSchema({
-  typeDefs: [ Query, Mutation, Subscription, typeDefPerson ],
-  resolvers: merge(personResolvers)
+  typeDefs: [ Query, Mutation, Subscription, typeDefPerson, typeDefAuthor, typeDefBook ],
+  resolvers: merge(personResolvers, authorResolvers, bookResolvers)
 });

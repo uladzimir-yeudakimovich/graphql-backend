@@ -10,13 +10,6 @@ const Person = require('./models/person');
 const User = require('./models/user');
 
 exports.typeDefPerson = `
-  type Author {
-    name: String!
-    born: Int
-    bookCount: Int!
-    id: ID!
-  }
-
   type Book {
     title: String!
     published: Int!
@@ -56,16 +49,6 @@ exports.typeDefPerson = `
 
 exports.personResolvers = {
   Query: {
-    authorCount: () => Author.collection.countDocuments(),
-    allAuthors: async () => {
-      return (await Author.find({})).map(async el => {
-        const { name, born, id } = el;
-        const bookCount = (await Book.find({author: name})).length;
-        return { name, born, id, bookCount };
-      });
-    },
-    findAuthor: (root, args) => Author.findOne({ name: args.name }),
-
     bookCount: () => Book.collection.countDocuments(),
     allBooks: (root, args) => {
       if (!args.author && !args.genre) {
@@ -181,28 +164,6 @@ exports.personResolvers = {
       }
 
       return person
-    },
-    editAuthor: async (root, args, context) => {
-      const currentUser = context.currentUser
-  
-      if (!currentUser) {
-        throw new AuthenticationError("not authenticated")
-      }
-      
-      const author = await Author.findOne({ name: args.name })
-      if (!author) {
-        return null
-      }
-  
-      author.born = args.setBornTo;
-      try {
-        await author.save();
-      } catch (error) {
-        throw new UserInputError(error._message, {
-          invalidArgs: args,
-        });
-      }
-      return author;
     },
     createUser: (root, args) => {
       const user = new User({ username: args.username })
