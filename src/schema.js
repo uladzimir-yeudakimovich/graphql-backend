@@ -1,4 +1,5 @@
 const { UserInputError, gql, PubSub } = require('apollo-server');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 const pubsub = new PubSub()
 const uuid = require('uuid/v1');
 const jwt = require('jsonwebtoken');
@@ -343,4 +344,7 @@ const resolvers = {
 //   resolvers: merge(resolvers, authorResolvers, bookResolvers)
 // });
 
-module.exports = { typeDefs, resolvers };
+exports.schema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});

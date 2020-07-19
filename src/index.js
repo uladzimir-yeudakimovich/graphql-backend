@@ -3,12 +3,11 @@ const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET_KEY } = require('./common/config');
 const connectToDb = require('./db/db');
-const { typeDefs, resolvers } = require('./schema');
+const { schema } = require('./schema');
 const User = require('./models/user');
 
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema,
   context: async ({ req }) => {
     const auth = req ? req.headers.authorization : null;
     if (auth && auth.toLowerCase().startsWith('bearer ')) {
