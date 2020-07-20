@@ -1,9 +1,9 @@
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { merge } = require('lodash');
 
-const { typeDefAuthor, authorResolvers } = require('./author.js');
-const { typeDefBook, bookResolvers } = require('./book.js');
-const { typeDefPerson, personResolvers } = require('./person.js');
+const { typeDefAuthor, authorResolvers } = require('./components/author.js');
+const { typeDefBook, bookResolvers } = require('./components/book.js');
+const { typeDefPerson, personResolvers } = require('./components/person.js');
 
 const Query = `
   type Query {

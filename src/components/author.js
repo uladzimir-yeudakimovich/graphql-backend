@@ -1,9 +1,9 @@
 const { UserInputError } = require('apollo-server');
 
-const Author = require('./models/author');
-const Book = require('./models/book');
+const Author = require('../models/author');
+const Book = require('../models/book');
 
-exports.typeDefAuthor = `
+const typeDefAuthor = `
   type Author {
     name: String!
     born: Int
@@ -12,7 +12,7 @@ exports.typeDefAuthor = `
   }
 `;
 
-exports.authorResolvers = {
+const authorResolvers = {
   Query: {
     authorCount: () => Author.collection.countDocuments(),
     allAuthors: async () => {
@@ -49,3 +49,5 @@ exports.authorResolvers = {
     }
   }
 };
+
+module.exports = { typeDefAuthor, authorResolvers };

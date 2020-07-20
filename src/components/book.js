@@ -1,10 +1,10 @@
 const { UserInputError } = require('apollo-server');
 const uuid = require('uuid/v1');
 
-const Author = require('./models/author');
-const Book = require('./models/book');
+const Author = require('../models/author');
+const Book = require('../models/book');
 
-exports.typeDefBook = `
+const typeDefBook = `
   type Book {
     title: String!
     published: Int!
@@ -14,7 +14,7 @@ exports.typeDefBook = `
   }
 `;
 
-exports.bookResolvers = {
+const bookResolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     allBooks: (root, args) => {
@@ -62,3 +62,5 @@ exports.bookResolvers = {
     }
   },
 };
+
+module.exports = { typeDefBook, bookResolvers };

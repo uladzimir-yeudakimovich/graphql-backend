@@ -1,12 +1,12 @@
-const { UserInputError, gql, PubSub } = require('apollo-server');
+const { UserInputError, PubSub } = require('apollo-server');
 const pubsub = new PubSub();
 const jwt = require('jsonwebtoken');
 
-const { JWT_SECRET_KEY } = require('./common/config');
-const Person = require('./models/person');
-const User = require('./models/user');
+const { JWT_SECRET_KEY } = require('../common/config');
+const Person = require('../models/person');
+const User = require('../models/user');
 
-exports.typeDefPerson = `
+const typeDefPerson = `
   type Person {
     name: String!
     phone: String
@@ -36,7 +36,7 @@ exports.typeDefPerson = `
   }
 `;
 
-exports.personResolvers = {
+const personResolvers = {
   Query: {
     personCount: () => Person.collection.countDocuments(),
     allPersons: (root, args) => {
@@ -159,3 +159,5 @@ exports.personResolvers = {
     },
   }
 };
+
+module.exports = { typeDefPerson, personResolvers };
